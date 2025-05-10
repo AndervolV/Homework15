@@ -14,11 +14,6 @@ public class SearchEngine {
         searchables.add(searchable);
     }
 
-    /**
-     * Возвращает все подходящие результаты поиска
-     * @param query поисковый запрос
-     * @return список всех найденных объектов
-     */
     public List<Searchable> search(String query) {
         List<Searchable> results = new ArrayList<>();
         String queryLower = query.toLowerCase();

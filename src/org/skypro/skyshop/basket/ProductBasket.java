@@ -12,19 +12,10 @@ public class ProductBasket {
         this.products = new ArrayList<>();
     }
 
-    /**
-     * Добавляет продукт в корзину
-     * @param product продукт для добавления
-     */
     public void add(Product product) {
         products.add(product);
     }
 
-    /**
-     * Удаляет все продукты с указанным именем
-     * @param name имя продукта для удаления
-     * @return список удаленных продуктов
-     */
     public List<Product> removeProductsByName(String name) {
         List<Product> removedProducts = new ArrayList<>();
         Iterator<Product> iterator = products.iterator();
@@ -39,29 +30,17 @@ public class ProductBasket {
         return removedProducts;
     }
 
-    /**
-     * Вычисляет общую стоимость товаров в корзине
-     * @return общая стоимость
-     */
     public int getTotalPrice() {
         return products.stream()
                 .mapToInt(Product::getPrice)
                 .sum();
     }
 
-    /**
-     * Проверяет наличие продукта в корзине по имени
-     * @param productName имя продукта
-     * @return true если продукт есть в корзине
-     */
     public boolean containsProduct(String productName) {
         return products.stream()
                 .anyMatch(p -> p.getName().equalsIgnoreCase(productName));
     }
 
-    /**
-     * Выводит содержимое корзины в консоль
-     */
     public void printBasket() {
         if (products.isEmpty()) {
             System.out.println("В корзине пусто");
@@ -74,17 +53,10 @@ public class ProductBasket {
         System.out.println("Итого: " + getTotalPrice());
     }
 
-    /**
-     * Очищает корзину
-     */
     public void clearBasket() {
         products.clear();
     }
 
-    /**
-     * Возвращает количество товаров в корзине
-     * @return количество товаров
-     */
     public int getItemCount() {
         return products.size();
     }
