@@ -1,31 +1,56 @@
 package org.skypro.skyshop;
 
-import org.skypro.skyshop.basket.ProductBasket;
-import org.skypro.skyshop.product.SimpleProduct;
-import org.skypro.skyshop.product.DiscountedProduct;
-import org.skypro.skyshop.product.FixPriceProduct;
+import org.skypro.skyshop.content.Article;
+import org.skypro.skyshop.product.*;
+import org.skypro.skyshop.search.BestResultNotFound;
+import org.skypro.skyshop.search.SearchEngine;
+import org.skypro.skyshop.search.Searchable;
 
 public class App {
     public static void main(String[] args) {
-        SimpleProduct laptop = new SimpleProduct("Ноутбук", 50000);
-        DiscountedProduct smartphone = new DiscountedProduct("Смартфон", 30000, 10);  // Скидка 10%
-        FixPriceProduct notebook = new FixPriceProduct("Блокнот");
-        DiscountedProduct headphones = new DiscountedProduct("Наушники", 8000, 15);   // Скидка 15%
-        FixPriceProduct pen = new FixPriceProduct("Ручка");
+        System.out.println("=== ДЕМОНСТРАЦИЯ ПРОВЕРОК В КОНСТРУКТОРАХ ===");
+        demonstrateConstructorValidation();
+        System.out.println("\n=== ДЕМОНСТРАЦИЯ ПОИСКА ЛУЧШЕГО РЕЗУЛЬТАТА ===");
+        demonstrateBestMatchSearch();
+    }
 
-        ProductBasket basket = new ProductBasket();
-        basket.addProduct(laptop);
-        basket.addProduct(smartphone);
-        basket.addProduct(notebook);
-        basket.addProduct(headphones);
-        basket.addProduct(pen);
+    private static void demonstrateConstructorValidation() {
+        try {
+            Product validProduct = new SimpleProduct("Валидный товар", 1000);
+            System.out.println("[УСПЕХ] Создан товар: " + validProduct);
+        } catch (IllegalArgumentException e) {
+            System.out.println("[ОШИБКА] " + e.getMessage());
+        }
+        try {
+            Product invalidProduct = new SimpleProduct("", -100); // Пустое название и отрицательная цена
+            System.out.println("[УСПЕХ] Создан товар: " + invalidProduct);
+        } catch (IllegalArgumentException e) {
+            System.out.println("[ОШИБКА] " + e.getMessage());
+        }
+    }
 
-        System.out.println("=== Содержимое корзины ===");
-        basket.printBasket();
-
-        System.out.println("\n=== Дополнительные проверки ===");
-        System.out.println("Общая стоимость: " + basket.getTotalPrice());
-        System.out.println("Есть ли 'Наушники' в корзине: " + basket.containsProduct("Наушники"));
-        System.out.println("Есть ли 'Карандаш' в корзине: " + basket.containsProduct("Карандаш"));
+    private static void demonstrateBestMatchSearch() {
+        SearchEngine engine = new SearchEngine(5);
+        try {
+            engine.add(new SimpleProduct("Ноутбук Lenovo IdeaPad", 45000));
+            engine.add(new DiscountedProduct("Смартфон Samsung Galaxy", 75000, 15));
+            engine.add(new Article("Выбор ноутбука", "Руководство по выбору лучшего ноутбука"));
+        } catch (IllegalArgumentException e) {
+            System.out.println("Ошибка при добавлении: " + e.getMessage());
+        }
+        try {
+            Searchable bestMatch = engine.findBestMatch("ноутбук");
+            System.out.println("[УСПЕХ] Найден лучший результат: " +
+                    bestMatch.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("[ОШИБКА] " + e.getMessage());
+        }
+        try {
+            Searchable bestMatch = engine.findBestMatch("планшет");
+            System.out.println("[УСПЕХ] Найден лучший результат: " +
+                    bestMatch.getStringRepresentation());
+        } catch (BestResultNotFound e) {
+            System.out.println("[ОШИБКА] " + e.getMessage());
+        }
     }
 }
