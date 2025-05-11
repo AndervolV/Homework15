@@ -1,63 +1,57 @@
 package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ProductBasket {
-    private final List<Product> products;
-
-    public ProductBasket() {
-        this.products = new ArrayList<>();
-    }
+    private final Map<String, List<Product>> productsMap = new HashMap<>();
 
     public void add(Product product) {
-        products.add(product);
+        productsMap.computeIfAbsent(product.getName(), k -> new java.util.ArrayList<>()).add(product);
     }
 
     public List<Product> removeProductsByName(String name) {
-        List<Product> removedProducts = new ArrayList<>();
-        Iterator<Product> iterator = products.iterator();
-
-        while (iterator.hasNext()) {
-            Product product = iterator.next();
-            if (product.getName().equalsIgnoreCase(name)) {
-                removedProducts.add(product);
-                iterator.remove();
-            }
-        }
-        return removedProducts;
+        return productsMap.containsKey(name) ? productsMap.remove(name) : List.of();
     }
 
     public int getTotalPrice() {
-        return products.stream()
+        return productsMap.values().stream()
+                .flatMap(List::stream)
                 .mapToInt(Product::getPrice)
                 .sum();
     }
 
     public boolean containsProduct(String productName) {
-        return products.stream()
-                .anyMatch(p -> p.getName().equalsIgnoreCase(productName));
+        return productsMap.containsKey(productName);
     }
 
     public void printBasket() {
-        if (products.isEmpty()) {
+        if (productsMap.isEmpty()) {
             System.out.println("В корзине пусто");
             return;
         }
 
-        products.forEach(product ->
-                System.out.println(product.getName() + ": " + product.getPrice())
+        productsMap.forEach((name, products) ->
+                products.forEach(product ->
+                        System.out.println(product.getName() + ": " + product.getPrice())
+                )
         );
         System.out.println("Итого: " + getTotalPrice());
     }
 
     public void clearBasket() {
-        products.clear();
+        productsMap.clear();
     }
 
-    public int getItemCount() {
-        return products.size();
+    public int getUniqueItemCount() {
+        return productsMap.size();
+    }
+
+    public int getTotalItemCount() {
+        return productsMap.values().stream()
+                .mapToInt(List::size)
+                .sum();
     }
 }

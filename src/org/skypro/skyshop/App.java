@@ -4,46 +4,35 @@ import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.content.Article;
 import org.skypro.skyshop.product.*;
 import org.skypro.skyshop.search.SearchEngine;
-import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.BestResultNotFound;
+import org.skypro.skyshop.search.Searchable;
 
-import java.util.List;
+import java.util.Map;
 
 public class App {
     public static void main(String[] args) {
-        ProductBasket basket = new ProductBasket();
         SearchEngine engine = new SearchEngine();
 
-        Product laptop1 = new SimpleProduct("Ноутбук Lenovo", 50000);
-        Product laptop2 = new SimpleProduct("Ноутбук Asus", 55000);
-        Product mouse = new SimpleProduct("Мышь", 1500);
-        Article article = new Article("Выбор ноутбука", "Как выбрать лучший ноутбук");
+        engine.add(new SimpleProduct("Ноутбук Asus", 50000));
+        engine.add(new SimpleProduct("Ноутбук Lenovo", 55000));
+        engine.add(new DiscountedProduct("Мышь Logitech", 2500, 10));
+        engine.add(new Article("Выбор ноутбука", "Руководство по выбору ноутбука"));
+        engine.add(new Article("Обзор техники", "Сравнение ноутбуков и планшетов"));
 
-        basket.add(laptop1);
-        basket.add(laptop2);
-        basket.add(mouse);
+        System.out.println("=== Результаты поиска 'ноутбук' ===");
+        Map<String, Searchable> results = engine.search("ноутбук");
 
-        engine.add(laptop1);
-        engine.add(laptop2);
-        engine.add(mouse);
-        engine.add(article);
+        results.forEach((name, item) -> {
+            System.out.println("Наименование: " + name);
+            System.out.println("Тип: " + item.getContentType());
+            System.out.println("Совпадение: " + item.getSearchTerm());
+            System.out.println("-----------");
+        });
 
-        System.out.println("=== Демонстрация удаления продуктов ===");
-        List<Product> removed = basket.removeProductsByName("Ноутбук");
-        System.out.println("Удалено продуктов: " + removed.size());
-        removed.forEach(p -> System.out.println("- " + p.getName()));
-        System.out.println("Осталось в корзине:");
-        basket.printBasket();
-
-        System.out.println("\n=== Демонстрация поиска ===");
-        List<Searchable> searchResults = engine.search("ноутбук");
-        System.out.println("Найдено результатов: " + searchResults.size());
-        searchResults.forEach(item ->
-                System.out.println("- " + item.getStringRepresentation())
-        );
-
-        System.out.println("\nПоиск 'планшет':");
-        List<Searchable> noResults = engine.search("планшет");
-        System.out.println("Найдено: " + noResults.size());
+        System.out.println("\n=== Поиск 'планшет' ===");
+        Map<String, Searchable> emptyResults = engine.search("планшет");
+        if (emptyResults.isEmpty()) {
+            System.out.println("Ничего не найдено");
+        }
     }
 }
