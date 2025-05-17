@@ -1,49 +1,41 @@
 package org.skypro.skyshop;
 
-import org.skypro.skyshop.basket.ProductBasket;
 import org.skypro.skyshop.content.Article;
 import org.skypro.skyshop.product.*;
-import org.skypro.skyshop.search.SearchEngine;
 import org.skypro.skyshop.search.Searchable;
-import org.skypro.skyshop.search.BestResultNotFound;
+import org.skypro.skyshop.search.SearchEngine;
 
-import java.util.List;
+import java.util.Set;
 
 public class App {
     public static void main(String[] args) {
-        ProductBasket basket = new ProductBasket();
         SearchEngine engine = new SearchEngine();
 
-        Product laptop1 = new SimpleProduct("Ноутбук Lenovo", 50000);
-        Product laptop2 = new SimpleProduct("Ноутбук Asus", 55000);
-        Product mouse = new SimpleProduct("Мышь", 1500);
-        Article article = new Article("Выбор ноутбука", "Как выбрать лучший ноутбук");
+        engine.addSearchable(new Article("Java Programming", "Content about Java"));
+        engine.addSearchable(new Article("Spring", "Spring framework"));
+        engine.addSearchable(new Article("Hibernate Long", "Hibernate article"));
+        engine.addSearchable(new SimpleProduct("Laptop", 1000));
+        engine.addSearchable(new Article("Java Basics", "Introduction to Java"));
+        engine.addSearchable(new Article("A", "Shortest"));
+        engine.addSearchable(new Article("ABCDE", "Medium"));
+        engine.addSearchable(new Article("ABC", "Same length"));
+        engine.addSearchable(new Article("XYZ", "Same length"));
+        engine.addSearchable(new SimpleProduct("Long Product Name", 100));
 
-        basket.add(laptop1);
-        basket.add(laptop2);
-        basket.add(mouse);
-
-        engine.add(laptop1);
-        engine.add(laptop2);
-        engine.add(mouse);
-        engine.add(article);
-
-        System.out.println("=== Демонстрация удаления продуктов ===");
-        List<Product> removed = basket.removeProductsByName("Ноутбук");
-        System.out.println("Удалено продуктов: " + removed.size());
-        removed.forEach(p -> System.out.println("- " + p.getName()));
-        System.out.println("Осталось в корзине:");
-        basket.printBasket();
-
-        System.out.println("\n=== Демонстрация поиска ===");
-        List<Searchable> searchResults = engine.search("ноутбук");
-        System.out.println("Найдено результатов: " + searchResults.size());
-        searchResults.forEach(item ->
-                System.out.println("- " + item.getStringRepresentation())
+        System.out.println("=== Все элементы (отсортированы по длине имени и алфавиту) ===");
+        Set<Searchable> allResults = engine.search("");
+        allResults.forEach(item ->
+                System.out.println(item.getName() + " (length: " + item.getName().length() + ")")
         );
 
-        System.out.println("\nПоиск 'планшет':");
-        List<Searchable> noResults = engine.search("планшет");
-        System.out.println("Найдено: " + noResults.size());
+        System.out.println("\n=== Результаты поиска по 'Java' ===");
+        Set<Searchable> javaResults = engine.search("Java");
+        javaResults.forEach(item ->
+                System.out.println(item.getName() + " (length: " + item.getName().length() + ")")
+        );
+
+        System.out.println("\n=== Попытка добавить дубликат ===");
+        boolean added = engine.addSearchable(new Article("Java Programming", "New content"));
+        System.out.println("Дубликат добавлен? " + added);
     }
 }
