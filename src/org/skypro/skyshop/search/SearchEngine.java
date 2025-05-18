@@ -1,71 +1,50 @@
 package org.skypro.skyshop.search;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.Objects;
 
 public class SearchEngine {
-    private final List<Searchable> searchables;
+    private final Set<Searchable> searchables = new HashSet<>();
 
-    public SearchEngine() {
-        this.searchables = new ArrayList<>();
+    private static final Comparator<Searchable> SEARCHABLE_COMPARATOR =
+            Comparator.<Searchable, Integer>comparing(
+                    s -> s.getName().length(),
+                    Comparator.reverseOrder()
+            ).thenComparing(Searchable::getName);
+
+    public boolean addSearchable(Searchable searchable) {
+        if (searchable == null) {
+            throw new IllegalArgumentException("Searchable cannot be null");
+        }
+        return searchables.add(searchable);
     }
 
-    public void add(Searchable searchable) {
-        searchables.add(searchable);
+    public Set<Searchable> getAllSearchables() {
+        return Collections.unmodifiableSet(searchables);
     }
 
-    public List<Searchable> search(String query) {
-        List<Searchable> results = new ArrayList<>();
+    public Set<Searchable> search(String query) {
+        if (query == null) {
+            return Collections.emptySet();
+        }
+
         String queryLower = query.toLowerCase();
 
-        for (Searchable item : searchables) {
-            if (item.getSearchTerm().toLowerCase().contains(queryLower)) {
-                results.add(item);
-            }
-        }
-        return results;
+        return searchables.stream()
+                .filter(Objects::nonNull)
+                .filter(s -> s.getSearchTerm() != null)
+                .filter(s -> query.isEmpty() || s.getSearchTerm().toLowerCase().contains(queryLower))
+                .collect(Collectors.toCollection(() -> new TreeSet<>(SEARCHABLE_COMPARATOR)));
     }
 
-    public Searchable findBestMatch(String query) throws BestResultNotFound {
-        if (query == null || query.isEmpty()) {
-            throw new BestResultNotFound(query);
-        }
-
-        Searchable bestMatch = null;
-        int maxCount = 0;
-        String queryLower = query.toLowerCase();
-
-        for (Searchable item : searchables) {
-            if (item == null) continue;
-
-            String searchTerm = item.getSearchTerm().toLowerCase();
-            int count = countSubstringOccurrences(searchTerm, queryLower);
-
-            if (count > maxCount) {
-                maxCount = count;
-                bestMatch = item;
-            }
-        }
-
-        if (bestMatch == null) {
-            throw new BestResultNotFound(query);
-        }
-
-        return bestMatch;
-    }
-
-    private int countSubstringOccurrences(String str, String sub) {
+    private int countSubstringOccurrences(String text, String sub) {
         int count = 0;
         int index = 0;
-        int subLength = sub.length();
-
-        if (subLength == 0) return 0;
-
-        while ((index = str.indexOf(sub, index)) != -1) {
+        while ((index = text.indexOf(sub, index)) != -1) {
             count++;
-            index += subLength;
+            index += sub.length();
         }
-
         return count;
     }
 }
