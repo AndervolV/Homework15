@@ -1,6 +1,8 @@
 package org.skypro.skyshop.basket;
 
 import org.skypro.skyshop.product.Product;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,11 +11,11 @@ public class ProductBasket {
     private final Map<String, List<Product>> productsMap = new HashMap<>();
 
     public void add(Product product) {
-        productsMap.computeIfAbsent(product.getName(), k -> new java.util.ArrayList<>()).add(product);
+        productsMap.computeIfAbsent(product.getName(), k -> new ArrayList<>()).add(product);
     }
 
     public List<Product> removeProductsByName(String name) {
-        return productsMap.containsKey(name) ? productsMap.remove(name) : List.of();
+        return productsMap.containsKey(name) ? productsMap.remove(name) : Collections.emptyList();
     }
 
     public int getTotalPrice() {
