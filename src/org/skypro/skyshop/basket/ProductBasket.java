@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProductBasket {
     private final Map<String, List<Product>> productsMap = new HashMap<>();
@@ -35,12 +37,25 @@ public class ProductBasket {
             return;
         }
 
-        productsMap.forEach((name, products) ->
-                products.forEach(product ->
+        productsMap.values().stream()
+                .flatMap(List::stream)
+                .forEach(product ->
                         System.out.println(product.getName() + ": " + product.getPrice())
-                )
-        );
+                );
+
         System.out.println("Итого: " + getTotalPrice());
+
+        int specialCount = getSpecialCount();
+        if (specialCount > 0) {
+            System.out.println("Специальных товаров в корзине: " + specialCount);
+        }
+    }
+
+    private int getSpecialCount() {
+        return (int) productsMap.values().stream()
+                .flatMap(List::stream)
+                .filter(Product::isSpecial)
+                .count();
     }
 
     public void clearBasket() {
