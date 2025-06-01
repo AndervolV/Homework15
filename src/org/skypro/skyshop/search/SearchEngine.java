@@ -12,7 +12,6 @@ public class SearchEngine {
                     s -> s.getName().length(),
                     Comparator.reverseOrder()
             ).thenComparing(Searchable::getName);
-
     public boolean addSearchable(Searchable searchable) {
         if (searchable == null) {
             throw new IllegalArgumentException("Searchable cannot be null");

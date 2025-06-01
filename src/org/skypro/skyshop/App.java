@@ -4,7 +4,7 @@ import org.skypro.skyshop.content.Article;
 import org.skypro.skyshop.product.*;
 import org.skypro.skyshop.search.Searchable;
 import org.skypro.skyshop.search.SearchEngine;
-
+import org.skypro.skyshop.product.SimpleProduct;
 import java.util.Set;
 
 public class App {
